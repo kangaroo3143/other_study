@@ -1,0 +1,166 @@
+buildscript {
+	ext {
+        springBootVersion = '1.5.15.RELEASE'
+        springCloudVersion = 'Edgware.SR3'
+    }
+    repositories {
+    	maven { url "http://maven.ithinkdt.com:8081/nexus/content/repositories/snapshots/" }
+        mavenLocal()
+        mavenCentral()
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+configurations.all {
+     exclude group:'javax.servlet'
+     exclude group:'c3p0'
+     resolutionStrategy {
+        force 'commons-lang:commons-lang:2.5'//强制使用某个版本的库
+        force 'com.google.code.findbugs:jsr305:3.0.1'//强制使用某个版本的库
+        force 'commons-logging:commons-logging:1.2'//强制使用某个版本的库
+        force 'commons-io:commons-io:2.6'
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+    apply plugin: 'maven'
+    apply plugin: 'io.spring.dependency-management'
+
+    ext {
+        ITHINKDT_FRAMEWORKV3_VERSION = "3.0.101-SNAPSHOT"
+    }
+
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 10, 'minutes'
+        all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+        all*.exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
+        all*.exclude group: 'javax.servlet'
+    }
+
+    repositories {
+		mavenLocal()
+        mavenCentral()
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+        }
+        maven {
+            url "http://maven.ithinkdt.com:8081/nexus/content/groups/public/"
+        }
+    }
+	dependencyManagement {
+	    imports {
+	        mavenBom "org.springframework.cloud:spring-cloud-dependencies:"+ springCloudVersion
+	        mavenBom "org.springframework.boot:spring-boot-dependencies:"+ springBootVersion
+	    }
+	}
+    configurations {
+        ftpAntTask
+    }
+
+    dependencies {
+        annotationProcessor('org.projectlombok:lombok:1.18.4')
+        compile('org.projectlombok:lombok:1.18.4')
+        testAnnotationProcessor('org.projectlombok:lombok:1.18.4')
+        testCompile('org.projectlombok:lombok:1.18.4')
+        testCompile 'junit:junit:4.8.2'
+        ftpAntTask("org.apache.ant:ant-commons-net:1.8.4") {
+            module("commons-net:commons-net:1.4.1") {
+                dependencies "oro:oro:2.0.8:jar"
+            }
+        }
+    }
+//	version = '1.0.1-SNAPSHOT'
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+    compileJava {
+        options.compilerArgs << '-XDignore.symbol.file'
+//        options.fork = true
+//        options.bootClasspath = "$System.env.JAVA_HOME/jre/lib/rt.jar$File.pathSeparator$System.env.JAVA_HOME/jre/lib/jce.jar"
+        sourceSets {
+            main {
+                resources {
+                    srcDirs = ["src/main/resources", "src/main/java"]
+                }
+                java {
+                    srcDirs = ["src/main/java"]
+                }
+            }
+        }
+    }
+
+    jar {
+        manifest.attributes provider: 'iThinkDT.com'
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+	uploadArchives {
+        repositories {
+            mavenDeployer {
+                //为Pom文件做数字签名
+                //beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                //指定项目部署到的中央库地址，UserName和Password就是Part 1中注册的账号。
+                snapshotRepository(url: "http://maven.ithinkdt.com:8081/nexus/content/repositories/snapshots") {
+                    authentication(userName: 'deployment', password: '${pswd}')
+                }
+                //构造项目的Pom文件，参见Part 2中Pom文件的规范，不要遗漏必填项
+                pom.project {
+                    groupId project.group
+                    name project.name
+                    packaging 'jar'
+                    description 'nio-dqa'
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'ithinkdt'
+                            name 'iThinkDT.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    javadoc {
+        options {
+            encoding 'UTF-8'
+            charSet 'UTF-8'
+            author true
+            version true
+            tags["date"]
+        }
+    }
+    // 为项目生成**.jar/**-javadoc.jar/**-sources.jar  
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from 'build/docs/javadoc'
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives jar
+        //archives javadocJar  
+        archives sourcesJar
+    }
+}
