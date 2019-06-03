@@ -63,7 +63,7 @@ public class Test {
 
     public static List<WriteModel> createTestListJavaMode(){
         List<WriteModel> model1s = new ArrayList<WriteModel>();
-        for (int i = 0; i <100; i++) {
+        for (int i = 0; i <500000; i++) {
             WriteModel model1 = new WriteModel();
             model1.setP3(33+i);
             model1.setP4(44);
