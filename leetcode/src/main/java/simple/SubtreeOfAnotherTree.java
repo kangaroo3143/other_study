@@ -43,8 +43,6 @@ package simple;
 public class SubtreeOfAnotherTree {
 
 
-
-
     public class TreeNode {
         int val;
         TreeNode left;
@@ -56,16 +54,30 @@ public class SubtreeOfAnotherTree {
     }
 
 
+
+    /*
+    * 判断一个树的子树是不是和另一个树相等即可
+    * */
     public boolean isSubtree(TreeNode s, TreeNode t) {
+        if (s == null) return false;
+        if (s != null && t == null) return true;
+        if (s.val == t.val) {
+            return isSame(s, t);
+        } else {
+            return isSame(s.left, t) || isSame(s.right, t);
+        }
 
-        //todo
-
-        //hellog
-        //添加taskfsalfjsalfjalsjflsaj
         return false;
     }
 
 
+    public boolean isSame(TreeNode s, TreeNode t) {
+        if (s == null && t == null) return true;
+
+        if ((s == null && t != null) || (s != null && t == null)) return false;
+        if (s.val != t.val) return false;
+        if (s.val == t.val) return isSame(s.left, t.left) && isSame(s.right, t.right);
+    }
 
 
 }
