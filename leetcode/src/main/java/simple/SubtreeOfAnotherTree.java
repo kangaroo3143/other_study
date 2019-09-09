@@ -67,7 +67,6 @@ public class SubtreeOfAnotherTree {
             return isSame(s.left, t) || isSame(s.right, t);
         }
 
-        return false;
     }
 
 
@@ -77,6 +76,8 @@ public class SubtreeOfAnotherTree {
         if ((s == null && t != null) || (s != null && t == null)) return false;
         if (s.val != t.val) return false;
         if (s.val == t.val) return isSame(s.left, t.left) && isSame(s.right, t.right);
+
+        return false;
     }
 
 
