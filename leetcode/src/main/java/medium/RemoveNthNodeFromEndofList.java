@@ -22,7 +22,7 @@ import java.util.Map;
  * * com.ithinkdt.dqa.admin.config
  *
  * @version 1.0
- * @descreption:
+ * @descreption:19. Remove Nth Node From End of List
  * @date:2019/4/16 19:30
  * @author: liubo
  * @since JDK1.8
