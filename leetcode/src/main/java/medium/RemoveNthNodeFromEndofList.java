@@ -69,6 +69,8 @@ public class RemoveNthNodeFromEndofList {
 
         ListNode list = removeNthFromEnd(head, 1);
         System.out.println("fsaf");
+
+        System.out.println("sfaf");
     }
 
 }
