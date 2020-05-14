@@ -53,8 +53,6 @@ public class SubtreeOfAnotherTree {
         }
     }
 
-
-
     /*
     * 判断一个树的子树是不是和另一个树相等即可
     * */
