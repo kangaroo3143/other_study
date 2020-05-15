@@ -31,7 +31,7 @@ public class SolveNQueens2 {
             if (result[i] == column) {
                 return false;
             }
-            if (leftup > 0 && result[i] == leftup) {
+            if (leftup >= 0 && result[i] == leftup) {
                 return false;
             }
             if (rightup < 8 && result[i] == rightup) {
@@ -60,6 +60,11 @@ public class SolveNQueens2 {
 
 
     public static void main(String[] args) {
+//
+//        String s = "'sds gdasda" + "\r" + "edaeafd'";
+//        System.out.println("转换前："+s);
+//        s = s.replaceAll("\r|\n", "");
+//        System.out.println("转换后："+s);
         call8queens(0);
     }
 
